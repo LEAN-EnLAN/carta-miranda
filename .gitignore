@@ -36,6 +36,12 @@ yarn-error.log*
 # vercel
 .vercel
 
+# sdd / registry cache
+.atl/
+
+# local persistence store
+.data/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
