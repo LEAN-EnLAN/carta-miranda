@@ -11,7 +11,7 @@ function formatDate(date: string) {
 export function LetterHistory({ versions }: { versions: LetterVersion[] }) {
   return (
     <PaperSheet tone="base" className="p-6 sm:p-7">
-      <p className="text-[11px] uppercase tracking-[0.35em] text-[color:var(--wine)]/75">Historial visible</p>
+      <p className="text-[11px] uppercase tracking-[0.35em] text-[color:var(--wine)]/75">Historial de versiones</p>
       <div className="mt-5 space-y-0 overflow-hidden border border-[color:var(--border)]">
         {versions.slice().reverse().map((version, index) => (
           <article key={version.id} className={`px-4 py-4 ${index > 0 ? "ledger-divider" : ""}`}>

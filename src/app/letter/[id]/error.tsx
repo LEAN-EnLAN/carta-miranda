@@ -5,14 +5,19 @@ import Link from "next/link";
 export default function Error({ reset }: { error: Error & { digest?: string }; reset: () => void }) {
   return (
     <main className="mx-auto flex min-h-screen max-w-3xl flex-col items-center justify-center px-4 py-12 text-center">
-      <h1 className="font-serif text-3xl text-[color:var(--ink)]">Algo salió mal</h1>
-      <p className="mt-4 text-sm text-[color:var(--ink-muted)]">No pudimos cargar esta carta. Probá de nuevo.</p>
+      <div className="mb-8 flex items-center justify-between gap-6">
+        <div className="h-px flex-1 bg-[color:var(--border)]" />
+        <p className="font-serif text-4xl leading-none text-[color:var(--wine)]">C</p>
+        <div className="h-px flex-1 bg-[color:var(--border)]" />
+      </div>
+      <h1 className="font-serif text-3xl text-[color:var(--ink)]">No pudimos cargar la carta</h1>
+      <p className="mt-4 max-w-md text-sm leading-6 text-[color:var(--ink-muted)]">Algo falló al buscar el manuscrito. Probá de nuevo o volvé al archivo.</p>
       <div className="mt-8 flex items-center gap-4">
         <button type="button" onClick={reset} className="paper-button">
           reintentar
         </button>
         <Link href="/" className="paper-button">
-          volver
+          volver al archivo
         </Link>
       </div>
     </main>

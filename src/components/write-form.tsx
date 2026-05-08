@@ -165,8 +165,9 @@ export function WriteForm({ recipientId }: { recipientId: AccountId }) {
         <PaperSheet tone="raised" className="p-6 sm:p-8">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div>
-              <p className="text-[11px] uppercase tracking-[0.4em] text-[color:var(--wine)]/75">Escribir carta</p>
+              <p className="text-[11px] uppercase tracking-[0.4em] text-[color:var(--wine)]/75">Nueva carta</p>
               <h1 className="mt-2 font-serif text-4xl leading-none tracking-tight text-[color:var(--ink)]">Para {recipientId === "miranda" ? "Miranda" : "Leandro"}</h1>
+              <p className="mt-2 text-sm text-[color:var(--ink-muted)]">Escribí con calma. El borrador se guarda y lo seguís cuando quieras.</p>
             </div>
             <Link href="/" className="paper-button">
               volver
@@ -216,9 +217,20 @@ export function WriteForm({ recipientId }: { recipientId: AccountId }) {
 
         <aside className="space-y-6">
           <PaperSheet tone="base" className="p-6 sm:p-7">
-            <p className="text-[11px] uppercase tracking-[0.35em] text-[color:var(--wine)]/75">Nota</p>
+            <p className="text-[11px] uppercase tracking-[0.35em] text-[color:var(--wine)]/75">Cómo funciona</p>
+            <ul className="mt-4 space-y-3 text-sm leading-6 text-[color:var(--ink-muted)]">
+              <li>• <strong className="text-[color:var(--ink)]">Guardá</strong> — el borrador queda solo para vos.</li>
+              <li>• <strong className="text-[color:var(--ink)]">Editá</strong> — abrilo después y seguí escribiendo.</li>
+              <li>• <strong className="text-[color:var(--ink)]">Publicá</strong> — desde la carta, hacela visible para los dos.</li>
+            </ul>
+          </PaperSheet>
+
+          <PaperSheet tone="base" className="p-6 sm:p-7">
+            <p className="text-[11px] uppercase tracking-[0.35em] text-[color:var(--wine)]/75">Para {recipientId === "miranda" ? "Miranda" : "Leandro"}</p>
             <p className="mt-4 text-sm leading-7 text-[color:var(--ink-muted)]">
-              Esta carta queda como borrador hasta que la publiques. El acento acompaña la identidad del manuscrito.
+              {recipientId === "miranda"
+                ? "La destinataria de todo lo que merece ser leído dos veces."
+                : "Autor de las cartas, guardián de los borradores y de la tinta."}
             </p>
           </PaperSheet>
         </aside>

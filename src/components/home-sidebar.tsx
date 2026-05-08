@@ -25,14 +25,14 @@ export function HomeSidebar({ data }: { data: DashboardData }) {
 
       {/* Stats card */}
       <PaperSheet className="space-y-3 p-5">
-        <h3 className="text-[10px] uppercase tracking-widest text-[color:var(--ink-muted)]">Resumen</h3>
+        <h3 className="text-[10px] uppercase tracking-widest text-[color:var(--ink-muted)]">El archivo</h3>
         <div className="space-y-2 text-sm">
           <div className="flex justify-between">
             <span className="text-[color:var(--ink-muted)]">Cartas compartidas</span>
             <span className="font-medium text-[color:var(--ink)]">{data.published.length}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-[color:var(--ink-muted)]">Borradores</span>
+            <span className="text-[color:var(--ink-muted)]">Borradores tuyos</span>
             <span className="font-medium text-[color:var(--ink)]">{data.drafts.length}</span>
           </div>
           <div className="flex justify-between">
@@ -44,7 +44,7 @@ export function HomeSidebar({ data }: { data: DashboardData }) {
 
       {/* Notifications card */}
       <PaperSheet className="space-y-3 p-5">
-        <h3 className="text-[10px] uppercase tracking-widest text-[color:var(--ink-muted)]">Notificaciones</h3>
+        <h3 className="text-[10px] uppercase tracking-widest text-[color:var(--ink-muted)]">Avisos</h3>
         {data.notifications.length === 0 && (
           <p className="text-sm text-[color:var(--ink-muted)]">Sin novedades.</p>
         )}

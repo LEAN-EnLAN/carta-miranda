@@ -28,7 +28,7 @@ export function FeedCardLetter({ item, viewerId }: { item: FeedLetterItem; viewe
     <PaperSheet tone={isDraft ? "raised" : "base"} className="feed-card p-5 sm:p-6">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-[11px] uppercase tracking-[0.35em] text-[color:var(--wine)]/75">{isDraft ? "Borrador privado" : "Carta en el feed"}</p>
+          <p className="text-[11px] uppercase tracking-[0.35em] text-[color:var(--wine)]/75">{isDraft ? "Borrador — solo tuyo" : "Carta compartida"}</p>
           <h3 className="mt-2 font-serif text-2xl leading-tight text-[color:var(--ink)]">{item.letter.title}</h3>
           <p className="mt-2 text-xs uppercase tracking-[0.28em] text-[color:var(--ink-muted)]">
             {authorName} · {formatDate(item.createdAt)}
@@ -46,7 +46,7 @@ export function FeedCardLetter({ item, viewerId }: { item: FeedLetterItem; viewe
 
       <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
         <p className="text-[11px] uppercase tracking-[0.26em] text-[color:var(--ink-muted)]">
-          {item.versionCount > 1 ? `${item.versionCount} huellas` : item.visibleToViewer ? "visible para vos" : "solo para el autor"}
+          {item.versionCount > 1 ? `${item.versionCount} versiones` : item.visibleToViewer ? "visible para vos" : "solo para quien la escribió"}
         </p>
         <div className="flex items-center gap-3">
           {canDelete ? (

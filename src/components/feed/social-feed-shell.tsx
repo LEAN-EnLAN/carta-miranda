@@ -33,13 +33,16 @@ export function SocialFeedShell({
     >
       <div className="mx-auto grid min-h-screen max-w-7xl gap-8 px-4 py-8 sm:px-6 lg:px-8 xl:grid-cols-[1fr_22rem]">
         <main className="feed-shell min-h-screen">
-          <header className="mb-12 border-b border-[color:var(--border)] pb-8">
-            <div className="space-y-4">
+          <header className="mb-10 border-b border-[color:var(--border)] pb-6">
+            <div className="space-y-3">
               <h1 className="font-serif text-3xl font-normal tracking-tight text-[color:var(--ink)] sm:text-4xl">{relationship.conversationLabel}</h1>
               <p className="max-w-2xl text-sm leading-relaxed text-[color:var(--ink-muted)]">{relationship.conversationSubtitle}</p>
+              <p className="max-w-xl text-xs leading-5 text-[color:var(--ink-muted)]">
+                Acá vive lo que se escriben. Cada carta, cada borrador, cada huella queda en el hilo.
+              </p>
             </div>
 
-            <div className="mt-8 flex flex-wrap items-center gap-4">
+            <div className="mt-6 flex flex-wrap items-center gap-4">
               <Link href={`/${relationship.partnerId}`} className="text-sm font-medium uppercase tracking-wider text-[color:var(--ink)] hover:text-[color:var(--wine)]">
                 Ver Perfil
               </Link>

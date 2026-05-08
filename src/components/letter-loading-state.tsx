@@ -18,7 +18,7 @@ export function LetterLoadingState({ label = "Preparando la carta…" }: { label
           </div>
         </div>
 
-        <p className="mt-8 text-center text-sm text-[color:var(--ink-muted)]">{label}</p>
+        <p className="mt-8 text-center text-sm italic text-[color:var(--ink-muted)]">{label}</p>
       </section>
     </main>
   );

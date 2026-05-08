@@ -35,7 +35,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
     <EditorialFrame
       eyebrow="Perfil"
       title={profile.user.displayName}
-      description={`${profile.user.bio} · ${relationship.conversationLabel}`}
+      description={`${profile.user.bio} · ${relationship.conversationLabel} — el hilo compartido`}
       actions={
         <>
           {!isOwner ? (
@@ -55,14 +55,14 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
     >
       <div className="space-y-6">
         <PaperSheet tone="raised" className="p-6 sm:p-7">
-          <p className="text-[11px] uppercase tracking-[0.35em] text-[color:var(--wine)]/75">Nota biográfica</p>
+          <p className="text-[11px] uppercase tracking-[0.35em] text-[color:var(--wine)]/75">Sobre {profile.user.displayName}</p>
           <p className="mt-4 max-w-3xl text-justify text-sm leading-8 text-[color:var(--ink)] first-letter:float-left first-letter:mr-3 first-letter:mt-1 first-letter:font-serif first-letter:text-6xl first-letter:leading-none first-letter:text-[color:var(--wine)]">
             {profile.user.bio}
           </p>
         </PaperSheet>
 
         <PaperSheet tone="base" className="p-6 sm:p-7">
-          <p className="text-[11px] uppercase tracking-[0.35em] text-[color:var(--wine)]/75">Contexto relacional</p>
+          <p className="text-[11px] uppercase tracking-[0.35em] text-[color:var(--wine)]/75">El hilo compartido</p>
           <div className="mt-5 grid gap-4 sm:grid-cols-3">
             <div className="border border-[color:var(--border)] p-4">
               <p className="text-[11px] uppercase tracking-[0.3em] text-[color:var(--wine)]/75">Compartidas</p>
@@ -86,7 +86,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
               <span className="border border-[color:var(--border)] px-3 py-1 text-xs text-[color:var(--ink-muted)]">{profile.drafts.length}</span>
             </div>
             <div className="mt-5 space-y-0 overflow-hidden border border-[color:var(--border)]">
-              {profile.drafts.length ? profile.drafts.map((letter) => <FeedCardLetter key={letter.id} item={{ kind: "letter", id: `letter:${letter.id}`, createdAt: letter.updatedAt, cursor: letter.updatedAt, letter, visibleToViewer: true, versionCount: letter.versions.length }} viewerId={currentUser.id} />) : <p className="px-4 py-8 text-sm text-[color:var(--ink-muted)] ledger-divider">No hay borradores.</p>}
+              {profile.drafts.length ? profile.drafts.map((letter) => <FeedCardLetter key={letter.id} item={{ kind: "letter", id: `letter:${letter.id}`, createdAt: letter.updatedAt, cursor: letter.updatedAt, letter, visibleToViewer: true, versionCount: letter.versions.length }} viewerId={currentUser.id} />) : <p className="px-4 py-8 text-sm text-[color:var(--ink-muted)] ledger-divider">No hay borradores. Abrí el compositor y empezá a escribir.</p>}
             </div>
           </PaperSheet>
         ) : null}
@@ -105,7 +105,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
                   <FeedCardLetter item={{ kind: "letter", id: `letter:${letter.id}`, createdAt: letter.publishedAt ?? letter.updatedAt, cursor: letter.publishedAt ?? letter.updatedAt, letter, visibleToViewer: true, versionCount: letter.versions.length }} />
                 )}
               </div>
-            )) : <p className="px-4 py-8 text-sm text-[color:var(--ink-muted)] ledger-divider">Todavía no hay cartas publicadas.</p>}
+            )) : <p className="px-4 py-8 text-sm text-[color:var(--ink-muted)] ledger-divider">Todavía no hay cartas publicadas. El hilo está esperando la primera.</p>}
             </div>
         </PaperSheet>
       </div>

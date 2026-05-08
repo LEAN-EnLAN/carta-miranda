@@ -5,6 +5,7 @@ import { useState } from "react";
 import type { AccountId, FeedItem } from "@/lib/types";
 import { encodeFeedCursor } from "@/lib/feed-cursor";
 import { ComposerFields, ComposerPreview, isComposerReady, type ComposerValues } from "../write-form";
+import { PaperSheet } from "../paper-sheet";
 import { useImmersiveComposer } from "./immersive-composer-provider";
 
 function createOptimisticLetterItem(values: ComposerValues, id: string, authorId: AccountId): FeedItem {
@@ -123,10 +124,10 @@ export function ImmersiveComposerSheet({
       >
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <p className="text-[11px] uppercase tracking-[0.45em] text-[color:var(--wine)]/75">Compositor inmersivo</p>
-            <h2 className="mt-2 font-serif text-2xl tracking-tight text-[color:var(--ink)] sm:text-3xl">Abrí la mesa sin salir del feed</h2>
+            <p className="text-[11px] uppercase tracking-[0.45em] text-[color:var(--wine)]/75">Nueva carta</p>
+            <h2 className="mt-2 font-serif text-2xl tracking-tight text-[color:var(--ink)] sm:text-3xl">Escribile a {values.recipientId === "miranda" ? "Miranda" : "Leandro"}</h2>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-[color:var(--ink-muted)] max-sm:hidden">
-              Guardá un borrador, revisalo en preview y seguí scrolleando. El estado vive en sessionStorage para que no se pierda.
+              Guardá un borrador sin salir del feed. Tu texto se guarda automáticamente para que no se pierda.
             </p>
           </div>
 
@@ -171,30 +172,24 @@ export function ImmersiveComposerSheet({
           </form>
 
           <aside className="grid gap-4 sm:grid-cols-2 xl:block xl:space-y-4">
-            <section className="border border-[color:var(--border)] p-5">
-              <p className="text-[11px] uppercase tracking-[0.35em] text-[color:var(--wine)]/75">Estado</p>
-              <dl className="mt-4 space-y-3 text-sm text-[color:var(--ink-muted)]">
-                <div className="flex items-center justify-between gap-4">
-                  <dt>Modo</dt>
-                  <dd className="text-[color:var(--ink)]">{mode}</dd>
-                </div>
-                <div className="flex items-center justify-between gap-4">
-                  <dt>Destino</dt>
-                  <dd className="text-[color:var(--ink)]">{values.recipientId === "miranda" ? "Miranda" : "Leandro"}</dd>
-                </div>
-                <div className="flex items-center justify-between gap-4">
-                  <dt>Acento</dt>
-                  <dd className="text-[color:var(--ink)]">{values.accent}</dd>
-                </div>
-              </dl>
-            </section>
+            <PaperSheet tone="base" className="p-5">
+              <p className="text-[11px] uppercase tracking-[0.35em] text-[color:var(--wine)]/75">Para tener en cuenta</p>
+              <ul className="mt-4 space-y-3 text-sm leading-6 text-[color:var(--ink-muted)]">
+                <li>• El borrador se guarda y queda solo para vos.</li>
+                <li>• Podés editarlo después desde la carta.</li>
+                <li>• Cuando esté lista, abrila y publicala.</li>
+              </ul>
+            </PaperSheet>
 
-            <section className="border border-[color:var(--border)] p-5">
-              <p className="text-[11px] uppercase tracking-[0.35em] text-[color:var(--wine)]/75">Fallback</p>
-              <p className="mt-4 text-sm leading-6 text-[color:var(--ink-muted)]">
-                Si querés la mesa clásica, abrila acá. El compositor sigue disponible para entradas rápidas sin romper el flujo.
+            <PaperSheet tone="base" className="p-5">
+              <p className="text-[11px] uppercase tracking-[0.35em] text-[color:var(--wine)]/75">Destinatario</p>
+              <p className="mt-4 text-lg font-serif text-[color:var(--ink)]">
+                {values.recipientId === "miranda" ? "Miranda" : "Leandro"}
               </p>
-            </section>
+              <p className="mt-1 text-xs text-[color:var(--ink-muted)]">
+                {values.recipientId === "miranda" ? "La destinataria de todo lo que merece ser leído dos veces." : "Autor de las cartas, guardián de los borradores."}
+              </p>
+            </PaperSheet>
           </aside>
         </div>
       </section>

@@ -39,7 +39,7 @@ export function Dashboard({ data }: { data: DashboardData }) {
             <div className="flex items-center justify-between gap-4">
               <div>
                 <p className="text-[11px] uppercase tracking-[0.35em] text-[color:var(--wine)]/75">Accesos</p>
-                <h2 className="mt-2 font-serif text-2xl text-[color:var(--ink)]">Manejo del archivo</h2>
+                <h2 className="mt-2 font-serif text-2xl text-[color:var(--ink)]">Navegación</h2>
               </div>
               <span className="border border-[color:var(--border)] px-3 py-1 text-[11px] uppercase tracking-[0.25em] text-[color:var(--ink-muted)]">
                 cuenta fija
@@ -86,7 +86,7 @@ export function Dashboard({ data }: { data: DashboardData }) {
             <div className="flex items-center justify-between gap-4">
               <div>
                 <p className="text-[11px] uppercase tracking-[0.35em] text-[color:var(--wine)]/75">Borradores</p>
-                <h2 className="mt-2 font-serif text-2xl text-[color:var(--ink)]">Solo visibles para el autor</h2>
+                <h2 className="mt-2 font-serif text-2xl text-[color:var(--ink)]">Tus borradores</h2>
               </div>
               <span className="border border-[color:var(--border)] px-3 py-1 text-xs text-[color:var(--ink-muted)]">
                 {data.drafts.length}
@@ -108,7 +108,7 @@ export function Dashboard({ data }: { data: DashboardData }) {
                       </div>
                       <span className="text-[11px] uppercase tracking-[0.3em] text-[color:var(--wine)]">borrador</span>
                     </div>
-                    <p className="mt-3 text-[11px] uppercase tracking-[0.25em] text-[color:var(--ink-muted)]">abrir expediente</p>
+                    <p className="mt-3 text-[11px] uppercase tracking-[0.25em] text-[color:var(--ink-muted)]">abrir carta</p>
                   </Link>
                 ))
               ) : (
@@ -123,7 +123,7 @@ export function Dashboard({ data }: { data: DashboardData }) {
             <div className="flex items-center justify-between gap-4">
               <div>
                 <p className="text-[11px] uppercase tracking-[0.35em] text-[color:var(--wine)]/75">Publicadas</p>
-                <h2 className="mt-2 font-serif text-2xl text-[color:var(--ink)]">Visibles para ambas cuentas</h2>
+                <h2 className="mt-2 font-serif text-2xl text-[color:var(--ink)]">Cartas compartidas</h2>
               </div>
               <span className="border border-[color:var(--border)] px-3 py-1 text-xs text-[color:var(--ink-muted)]">
                 {data.published.length}
@@ -144,7 +144,7 @@ export function Dashboard({ data }: { data: DashboardData }) {
                     </div>
                     <span className="text-[11px] uppercase tracking-[0.3em] text-[color:var(--wine)]">publicada</span>
                   </div>
-                  <p className="mt-3 text-[11px] uppercase tracking-[0.25em] text-[color:var(--ink-muted)]">abrir expediente</p>
+                  <p className="mt-3 text-[11px] uppercase tracking-[0.25em] text-[color:var(--ink-muted)]">abrir carta</p>
                 </Link>
               ))}
             </div>
@@ -198,7 +198,7 @@ export function Dashboard({ data }: { data: DashboardData }) {
           </PaperSheet>
 
           <PaperSheet tone="base" className="p-6 sm:p-7">
-            <p className="text-[11px] uppercase tracking-[0.35em] text-[color:var(--wine)]/75">Reglas</p>
+            <p className="text-[11px] uppercase tracking-[0.35em] text-[color:var(--wine)]/75">Cómo funciona</p>
             <ul className="mt-4 space-y-3 text-sm leading-6 text-[color:var(--ink-muted)]">
               <li>• Los borradores solo los ve y edita quien los escribió.</li>
               <li>• Las cartas publicadas quedan visibles para Leandro y Miranda.</li>

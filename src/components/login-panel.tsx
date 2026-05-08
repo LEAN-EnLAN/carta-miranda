@@ -12,7 +12,7 @@ export function LoginPanel({ error }: { error?: string }) {
               Dos cuentas fijas, una historia compartida.
             </h1>
             <p className="max-w-xl text-sm leading-6 text-[color:var(--ink-muted)] sm:text-base">
-              Entrá con una de las dos identidades del sistema para escribir, leer o seguir el rastro de cada versión.
+              Un espacio privado para escribirse cartas. Borradores, versiones y el rastro de una conversación a dos voces.
             </p>
 
             <div className="grid gap-3 sm:grid-cols-2">
@@ -26,7 +26,7 @@ export function LoginPanel({ error }: { error?: string }) {
                     <span className="h-3 w-3 rounded-full" style={{ background: account.accent }} />
                   </div>
                   <p className="mt-3 text-xs leading-5 text-[color:var(--ink-muted)]">{account.bio}</p>
-                  <p className="mt-3 text-[11px] uppercase tracking-[0.28em] text-[color:var(--wine)]/75">acceso fijo</p>
+                  <p className="mt-3 text-[11px] uppercase tracking-[0.28em] text-[color:var(--wine)]/75">elegir esta voz</p>
                 </article>
               ))}
             </div>
@@ -36,6 +36,9 @@ export function LoginPanel({ error }: { error?: string }) {
         <PaperSheet tone="base" className="p-6 sm:p-8">
           <section>
             <p className="text-[11px] uppercase tracking-[0.4em] text-[color:var(--wine)]/75">Ingreso</p>
+            <p className="mt-3 text-sm leading-6 text-[color:var(--ink-muted)]">
+              Elegí con qué voz querés entrar. Cada identidad tiene sus borradores y sus cartas.
+            </p>
             <form action="/api/auth/login" method="post" className="mt-6 space-y-4">
               <label className="block">
                 <span className="mb-2 block text-sm text-[color:var(--ink-muted)]">Cuenta</span>
@@ -62,7 +65,7 @@ export function LoginPanel({ error }: { error?: string }) {
               {error ? <p className="paper-sheet px-4 py-3 text-sm text-[color:var(--wine)]">{error}</p> : null}
 
               <button type="submit" className="paper-button w-full">
-                entrar
+                entrar al archivo
               </button>
             </form>
           </section>

@@ -15,7 +15,7 @@ export function ImmersiveComposerLauncher({ className = "" }: { className?: stri
         className,
       ].join(" ")}
     >
-      escribir en vivo
+      escribir carta
     </button>
   );
 }

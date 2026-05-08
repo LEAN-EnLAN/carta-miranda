@@ -43,7 +43,13 @@ export function LetterEditor({ data }: { data: LetterDetailData }) {
     <EditorialFrame
       eyebrow={data.letter.status === "draft" ? "Borrador" : "Carta publicada"}
       title={data.letter.title}
-      description={data.isAuthor ? "Podés revisar, corregir y publicar desde la mesa de edición." : "Versión de lectura, impresa sobre papel para archivo."}
+      description={
+        data.letter.status === "draft"
+          ? data.isAuthor
+            ? "Editá, ajustá y cuando esté lista publicala. Solo vos la ves hasta entonces."
+            : "Borrador en proceso. Solo el autor puede editarlo."
+          : "Versión final, impresa sobre papel para archivo."
+      }
       actions={
         <Link href="/" className="paper-button">
           volver
@@ -55,9 +61,11 @@ export function LetterEditor({ data }: { data: LetterDetailData }) {
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div>
               <p className="text-[11px] uppercase tracking-[0.35em] text-[color:var(--wine)]/75">Manuscrito</p>
-              <h2 className="mt-2 font-serif text-2xl text-[color:var(--ink)]">Mesa de edición</h2>
+              <h2 className="mt-2 font-serif text-2xl text-[color:var(--ink)]">
+                {data.isAuthor ? "Editá esta carta" : "Lectura"}
+              </h2>
               <p className="mt-2 max-w-2xl text-sm leading-6 text-[color:var(--ink-muted)]">
-                {data.isAuthor ? "Podés editar este texto." : "Solo lectura para cartas publicadas."}
+                {data.isAuthor ? "Cambiar el texto crea una nueva versión. El historial queda intacto." : "Solo lectura para cartas publicadas."}
               </p>
             </div>
             <p className="text-[11px] uppercase tracking-[0.3em] text-[color:var(--ink-muted)]">última versión: {latestVersion.type}</p>
@@ -162,7 +170,7 @@ export function LetterEditor({ data }: { data: LetterDetailData }) {
 
         <aside className="space-y-6">
           <PaperSheet tone="base" className="p-6 sm:p-7">
-            <p className="text-[11px] uppercase tracking-[0.35em] text-[color:var(--wine)]/75">Metadatos</p>
+            <p className="text-[11px] uppercase tracking-[0.35em] text-[color:var(--wine)]/75">Detalle</p>
             <dl className="mt-5 space-y-3 text-sm text-[color:var(--ink-muted)]">
               <div className="flex justify-between gap-4 ledger-divider pt-3 first:border-0 first:pt-0">
                 <dt>Autor</dt>
@@ -170,10 +178,10 @@ export function LetterEditor({ data }: { data: LetterDetailData }) {
               </div>
               <div className="flex justify-between gap-4 ledger-divider pt-3">
                 <dt>Estado</dt>
-                <dd className="text-[color:var(--ink)]">{data.letter.status}</dd>
+                <dd className="text-[color:var(--ink)]">{data.letter.status === "draft" ? "Borrador" : "Publicada"}</dd>
               </div>
               <div className="flex justify-between gap-4 ledger-divider pt-3">
-                <dt>Destinatarios</dt>
+                <dt>Para</dt>
                 <dd className="text-[color:var(--ink)]">{data.recipients.map((recipient) => recipient.displayName).join(", ")}</dd>
               </div>
             </dl>

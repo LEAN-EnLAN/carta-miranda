@@ -23,6 +23,9 @@ export function FeedCardStack({ item }: { item: FeedLetterItem }) {
           <h3 className="mt-1 font-serif text-3xl font-normal leading-tight text-[color:var(--ink)]">
             {item.letter.title}
           </h3>
+          <p className="mt-2 text-xs text-[color:var(--ink-muted)]">
+            Esta carta tiene varias versiones. Abrí el hilo para ver la evolución completa.
+          </p>
         </div>
 
         <Link href={`/letter/${item.letter.id}`} className="paper-button shrink-0">

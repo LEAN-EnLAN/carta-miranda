@@ -98,15 +98,17 @@ export function FeedTimeline({ initialPage, optimisticItems, viewerId }: { initi
       {uniqueItems.length ? (
         uniqueItems.map((item) => <div key={itemKey(item)}>{renderFeedItem(item, viewerId)}</div>)
       ) : (
-        <div className="p-8 text-center">
-          <p className="text-[11px] uppercase tracking-[0.35em] text-[color:var(--wine)]/75">Feed vacío</p>
-          <p className="mt-4 text-sm leading-7 text-[color:var(--ink-muted)]">Aún no hay cartas ni señales para mostrar. Abrí el compositor y dejá la primera huella.</p>
+        <div className="border-t border-b border-[color:var(--border)] py-16 text-center">
+          <p className="font-serif text-2xl text-[color:var(--ink)]">Todavía no hay cartas</p>
+          <p className="mx-auto mt-3 max-w-md text-sm leading-7 text-[color:var(--ink-muted)]">
+            Este es el hilo compartido entre Leandro y Miranda. Abrí el compositor y dejá la primera huella — una carta, un pensamiento, lo que sea.
+          </p>
         </div>
       )}
 
       <div ref={sentinelRef} className="timeline-sentinel" aria-hidden="true" />
 
-      {loading ? <div className="p-4 text-sm text-[color:var(--ink-muted)]">trayendo más contexto…</div> : null}
+      {loading ? <div className="py-4 text-center text-sm text-[color:var(--ink-muted)]">trayendo más cartas…</div> : null}
       {error ? (
         <div className="border border-[color:var(--border)] p-4 text-sm text-[color:var(--wine)]">
           {error}
@@ -115,7 +117,7 @@ export function FeedTimeline({ initialPage, optimisticItems, viewerId }: { initi
           </button>
         </div>
       ) : null}
-      {!hasMore && uniqueItems.length ? <div className="p-4 text-sm text-[color:var(--ink-muted)]">Llegaste al borde del hilo.</div> : null}
+      {!hasMore && uniqueItems.length ? <div className="py-4 text-center text-sm text-[color:var(--ink-muted)]">Llegaste al comienzo del hilo.</div> : null}
     </div>
   );
 }
