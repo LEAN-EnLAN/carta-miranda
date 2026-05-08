@@ -2,19 +2,32 @@ import { promises as fs } from "fs";
 import path from "path";
 import { randomUUID } from "crypto";
 import {
+  encodeFeedCursor as _encodeFeedCursor,
+  decodeFeedCursor as _decodeFeedCursor,
+  compareFeedEntries as _compareFeedEntries,
+  InvalidFeedCursorError as _InvalidFeedCursorError,
+} from "./feed-cursor";
+import {
   ACCOUNT_LOOKUP,
   AUTHOR_ID,
   FIXED_ACCOUNTS,
   STORE_FILE,
+  DEFAULT_FEED_PAGE_SIZE,
   SEED_POEM_BODY,
   SEED_POEM_TITLE,
   getOtherAccountId,
 } from "./constants";
+
+// Re-export for backwards compatibility
+export { _encodeFeedCursor as encodeFeedCursor, _decodeFeedCursor as decodeFeedCursor, _compareFeedEntries as compareFeedEntries, _InvalidFeedCursorError as InvalidFeedCursorError };
 import type {
   Account,
   AccountId,
   AppStore,
   AutomationRunRecord,
+  FeedActivityItem,
+  FeedLetterItem,
+  FeedPage,
   DashboardData,
   LetterDetailData,
   LetterEventType,
@@ -22,24 +35,23 @@ import type {
   LetterVersion,
   NotificationRecord,
   NotificationType,
-  SessionRecord,
+  PushSubscription,
+  RelationshipSummary,
 } from "./types";
 import { createSupabaseAdmin, getSupabaseStateKey, isSupabaseConfigured } from "./supabase";
-
-const DEFAULT_EXPIRY_DAYS = 30;
 
 let writeQueue = Promise.resolve();
 
 function dataPath() {
+  // On serverless (Vercel), /tmp is the only writable directory
+  if (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME) {
+    return path.join("/tmp", STORE_FILE);
+  }
   return path.join(process.cwd(), STORE_FILE);
 }
 
 function now() {
   return new Date().toISOString();
-}
-
-function futureDate(days: number) {
-  return new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString();
 }
 
 function poemSeedVersion(): LetterVersion {
@@ -61,7 +73,6 @@ function createSeedStore(): AppStore {
   return {
     schemaVersion: 1,
     accounts: [...FIXED_ACCOUNTS] as Account[],
-    sessions: [],
     letters: [
       {
         id: randomUUID(),
@@ -78,6 +89,7 @@ function createSeedStore(): AppStore {
     ],
     notifications: [],
     automationRuns: [],
+    pushSubscriptions: [],
   };
 }
 
@@ -87,22 +99,22 @@ async function ensureDirExists() {
 
 async function readStore(): Promise<AppStore> {
   if (isSupabaseConfigured()) {
-    const supabase = createSupabaseAdmin();
-    const stateKey = getSupabaseStateKey();
-    const { data, error } = await supabase.from("app_state").select("data").eq("id", stateKey).maybeSingle();
-    if (error) {
-      throw error;
-    }
-    if (data?.data) {
-      return data.data as AppStore;
-    }
+    try {
+      const supabase = createSupabaseAdmin();
+      const stateKey = getSupabaseStateKey();
+      const { data, error } = await supabase.from("app_state").select("data").eq("id", stateKey).maybeSingle();
+      if (error) throw error;
+      if (data?.data) {
+        return data.data as AppStore;
+      }
 
-    const seed = createSeedStore();
-    const { error: insertError } = await supabase.from("app_state").upsert({ id: stateKey, data: seed });
-    if (insertError) {
-      throw insertError;
+      const seed = createSeedStore();
+      const { error: insertError } = await supabase.from("app_state").upsert({ id: stateKey, data: seed });
+      if (insertError) throw insertError;
+      return seed;
+    } catch (e) {
+      console.warn("Supabase read failed, falling back to file store:", e instanceof Error ? e.message : String(e));
     }
-    return seed;
   }
 
   try {
@@ -122,15 +134,17 @@ async function readStore(): Promise<AppStore> {
 
 async function writeStore(store: AppStore) {
   if (isSupabaseConfigured()) {
-    const supabase = createSupabaseAdmin();
-    const { error } = await supabase.from("app_state").upsert({
-      id: getSupabaseStateKey(),
-      data: store,
-    });
-    if (error) {
-      throw error;
+    try {
+      const supabase = createSupabaseAdmin();
+      const { error } = await supabase.from("app_state").upsert({
+        id: getSupabaseStateKey(),
+        data: store,
+      });
+      if (error) throw error;
+      return;
+    } catch (e) {
+      console.warn("Supabase write failed, falling back to file store:", e instanceof Error ? e.message : String(e));
     }
-    return;
   }
 
   await ensureDirExists();
@@ -161,6 +175,43 @@ function cloneLetter(letter: LetterRecord): LetterRecord {
   };
 }
 
+function cloneNotification(notification: NotificationRecord): NotificationRecord {
+  return { ...notification };
+}
+
+function mapLetterFeedItem(letter: LetterRecord, viewerId: AccountId): FeedLetterItem {
+  const createdAt = letter.status === "draft" ? letter.updatedAt : letter.publishedAt ?? letter.updatedAt;
+  return {
+    kind: "letter",
+    id: `letter:${letter.id}`,
+    createdAt,
+    cursor: _encodeFeedCursor(createdAt, `letter:${letter.id}`),
+    letter: cloneLetter(letter),
+    visibleToViewer: letter.status === "published" || letter.authorId === viewerId,
+    versionCount: letter.versions.length,
+  };
+}
+
+function mapActivityFeedItem(notification: NotificationRecord): FeedActivityItem {
+  return {
+    kind: "activity",
+    id: `notification:${notification.id}`,
+    createdAt: notification.createdAt,
+    cursor: _encodeFeedCursor(notification.createdAt, `notification:${notification.id}`),
+    notification: cloneNotification(notification),
+  };
+}
+
+function buildFeedEntries(store: AppStore, userId: AccountId) {
+  const letterEntries = store.letters
+    .filter((letter) => letter.status === "published" || letter.authorId === userId)
+    .map((letter) => mapLetterFeedItem(letter, userId));
+
+  const activityEntries = store.notifications.filter((notification) => notification.userId === userId).map(mapActivityFeedItem);
+
+  return [...letterEntries, ...activityEntries].sort(_compareFeedEntries);
+}
+
 export function getAccountById(accountId: AccountId): Account {
   const account = ACCOUNT_LOOKUP[accountId];
   if (!account) {
@@ -173,51 +224,9 @@ export async function listAccounts() {
   return [...FIXED_ACCOUNTS] as Account[];
 }
 
-export async function getSession(token: string | undefined): Promise<SessionRecord | null> {
-  if (!token) return null;
-
-  const store = await readStore();
-  const session = store.sessions.find((record) => record.token === token);
-  if (!session) return null;
-
-  if (new Date(session.expiresAt).getTime() < Date.now()) {
-    await mutateStore((draft) => {
-      draft.sessions = draft.sessions.filter((record) => record.token !== token);
-    });
-    return null;
-  }
-
-  return session;
-}
-
-export async function createSession(userId: AccountId): Promise<SessionRecord> {
-  return mutateStore((store) => {
-    const session: SessionRecord = {
-      token: randomUUID(),
-      userId,
-      createdAt: now(),
-      expiresAt: futureDate(DEFAULT_EXPIRY_DAYS),
-    };
-    store.sessions.push(session);
-    return session;
-  });
-}
-
-export async function deleteSession(token: string) {
-  return mutateStore((store) => {
-    store.sessions = store.sessions.filter((session) => session.token !== token);
-  });
-}
-
 export async function findUserByCredentials(handle: string, password: string) {
   const normalized = handle.trim().toLowerCase();
   return (await listAccounts()).find((account) => account.handle === normalized && account.password === password) ?? null;
-}
-
-export async function getUserBySession(token: string | undefined) {
-  const session = await getSession(token);
-  if (!session) return null;
-  return getAccountById(session.userId);
 }
 
 export async function getDashboardData(userId: AccountId): Promise<DashboardData> {
@@ -230,6 +239,57 @@ export async function getDashboardData(userId: AccountId): Promise<DashboardData
     .map((notification) => ({ ...notification }));
 
   return { user, drafts, published, notifications };
+}
+
+export async function getFeedPage(userId: AccountId, cursor?: string | null, pageSize = DEFAULT_FEED_PAGE_SIZE): Promise<FeedPage> {
+  const store = await readStore();
+  const entries = buildFeedEntries(store, userId);
+  const startIndex = cursor
+    ? (() => {
+        const target = _decodeFeedCursor(cursor);
+        const index = entries.findIndex((entry) => _compareFeedEntries(entry, target) > 0);
+        return index >= 0 ? index : entries.length;
+      })()
+    : 0;
+
+  const items = entries.slice(startIndex, startIndex + pageSize);
+  const lastItem = items[items.length - 1] ?? null;
+
+  return {
+    items,
+    nextCursor: startIndex + pageSize < entries.length && lastItem ? lastItem.cursor : null,
+    hasMore: startIndex + pageSize < entries.length,
+    pageSize,
+    total: entries.length,
+    empty: entries.length === 0,
+  };
+}
+
+export async function getRelationshipSummary(userId: AccountId): Promise<RelationshipSummary> {
+  const store = await readStore();
+  const viewer = getAccountById(userId);
+  const partnerId = getOtherAccountId(userId);
+  const partner = getAccountById(partnerId);
+
+  const sharedLetterCount = store.letters.filter((letter) => letter.status === "published" && letter.recipientIds.includes(partnerId)).length;
+  const draftCount = store.letters.filter((letter) => letter.authorId === userId && letter.status === "draft").length;
+  const unreadNotificationCount = store.notifications.filter((notification) => notification.userId === userId && !notification.readAt).length;
+  const recentPulseCount = store.notifications.filter((notification) => notification.userId === userId).length;
+
+  const lastActivityAt = buildFeedEntries(store, userId)[0]?.createdAt ?? null;
+
+  return {
+    viewer,
+    partner,
+    partnerId,
+    conversationLabel: `${viewer.displayName} × ${partner.displayName}`,
+    conversationSubtitle: `${sharedLetterCount} cartas compartidas · ${draftCount} borradores · ${unreadNotificationCount} pendientes`,
+    sharedLetterCount,
+    draftCount,
+    unreadNotificationCount,
+    lastActivityAt,
+    recentPulseCount,
+  };
 }
 
 export async function getProfileData(accountId: AccountId) {
@@ -510,4 +570,26 @@ export async function touchLetterSummary(letterId: string, summary: string, user
     letter.updatedAt = createdAt;
     return cloneLetter(letter);
   });
+}
+
+export async function addPushSubscription(subscription: PushSubscription) {
+  return mutateStore((store) => {
+    // Avoid duplicates by endpoint
+    const exists = store.pushSubscriptions.some((s) => s.endpoint === subscription.endpoint);
+    if (!exists) {
+      store.pushSubscriptions.push(subscription);
+    }
+    return { ok: true };
+  });
+}
+
+export async function removePushSubscription(endpoint: string) {
+  return mutateStore((store) => {
+    store.pushSubscriptions = store.pushSubscriptions.filter((s) => s.endpoint !== endpoint);
+  });
+}
+
+export async function getPushSubscriptions(): Promise<PushSubscription[]> {
+  const store = await readStore();
+  return [...store.pushSubscriptions];
 }

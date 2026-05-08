@@ -1,4 +1,5 @@
 import type { LetterVersion } from "../lib/types";
+import { PaperSheet } from "./paper-sheet";
 
 function formatDate(date: string) {
   return new Intl.DateTimeFormat("es-AR", {
@@ -9,20 +10,20 @@ function formatDate(date: string) {
 
 export function LetterHistory({ versions }: { versions: LetterVersion[] }) {
   return (
-    <section className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-6">
-      <p className="text-xs uppercase tracking-[0.4em] text-rose-200/55">Historial visible</p>
-      <div className="mt-5 space-y-4">
-        {versions.slice().reverse().map((version) => (
-          <article key={version.id} className="rounded-[1.35rem] border border-white/10 bg-black/20 p-4">
+    <PaperSheet tone="base" className="p-6 sm:p-7">
+      <p className="text-[11px] uppercase tracking-[0.35em] text-[color:var(--wine)]/75">Historial visible</p>
+      <div className="mt-5 space-y-0 overflow-hidden border border-[color:var(--border)]">
+        {versions.slice().reverse().map((version, index) => (
+          <article key={version.id} className={`px-4 py-4 ${index > 0 ? "ledger-divider" : ""}`}>
             <div className="flex items-center justify-between gap-4">
-              <p className="text-sm font-medium text-rose-50">{version.summary}</p>
-              <span className="text-[11px] uppercase tracking-[0.25em] text-rose-100/40">{version.type}</span>
+              <p className="text-sm font-medium text-[color:var(--ink)]">{version.summary}</p>
+              <span className="text-[11px] uppercase tracking-[0.25em] text-[color:var(--wine)]">{version.type}</span>
             </div>
-            <p className="mt-2 text-sm leading-6 text-rose-100/65 line-clamp-4 whitespace-pre-line">{version.body}</p>
-            <p className="mt-3 text-[11px] uppercase tracking-[0.25em] text-rose-100/35">{formatDate(version.createdAt)}</p>
+            <p className="mt-2 line-clamp-4 whitespace-pre-line text-sm leading-6 text-[color:var(--ink-muted)]">{version.body}</p>
+            <p className="mt-3 text-[11px] uppercase tracking-[0.25em] text-[color:var(--ink-muted)]">{formatDate(version.createdAt)}</p>
           </article>
         ))}
       </div>
-    </section>
+    </PaperSheet>
   );
 }

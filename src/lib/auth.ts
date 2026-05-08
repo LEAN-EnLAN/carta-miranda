@@ -2,13 +2,18 @@ import { createHmac, timingSafeEqual } from "crypto";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { SESSION_COOKIE } from "./constants";
-import { createSession, deleteSession, findUserByCredentials, getUserBySession } from "./store";
-import type { Account } from "./types";
+import { findUserByCredentials, getAccountById } from "./store";
+import type { Account, AccountId } from "./types";
+
+interface SessionPayload {
+  userId: AccountId;
+  expiresAt: string;
+}
 
 function getSecret() {
-  const secret = process.env.AUTH_SECRET;
+  const secret = process.env.SESSION_SECRET;
   if (!secret) {
-    throw new Error("AUTH_SECRET is required");
+    throw new Error("SESSION_SECRET env var is required");
   }
   return secret;
 }
@@ -17,24 +22,29 @@ function sign(token: string) {
   return createHmac("sha256", getSecret()).update(token).digest("hex");
 }
 
-function packToken(token: string) {
-  return `${token}.${sign(token)}`;
+function createSessionCookie(userId: AccountId): string {
+  const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+  const payload = Buffer.from(JSON.stringify({ userId, expiresAt })).toString("base64");
+  return `${payload}.${sign(payload)}`;
 }
 
-function unpackToken(value: string | undefined) {
-  if (!value) return null;
-  const [token, signature] = value.split(".");
-  if (!token || !signature) return null;
-  const expected = sign(token);
+function verifySessionCookie(cookie: string): AccountId | null {
+  const [payload, signature] = cookie.split(".");
+  if (!payload || !signature) return null;
+  const expected = sign(payload);
+  const decoded = JSON.parse(Buffer.from(payload, "base64").toString("utf8")) as SessionPayload;
+  if (new Date(decoded.expiresAt).getTime() < Date.now()) return null;
   const isValid = timingSafeEqual(Buffer.from(signature), Buffer.from(expected));
-  return isValid ? token : null;
+  return isValid ? decoded.userId : null;
 }
 
 export async function getCurrentUser(): Promise<Account | null> {
   const cookieStore = await cookies();
   const raw = cookieStore.get(SESSION_COOKIE)?.value;
-  const token = unpackToken(raw);
-  return getUserBySession(token ?? undefined);
+  if (!raw) return null;
+  const userId = verifySessionCookie(raw);
+  if (!userId) return null;
+  return getAccountById(userId);
 }
 
 export async function requireCurrentUser() {
@@ -46,9 +56,9 @@ export async function requireCurrentUser() {
 export async function loginWithCredentials(handle: string, password: string) {
   const user = await findUserByCredentials(handle, password);
   if (!user) return null;
-  const session = await createSession(user.id);
+  const sessionCookie = createSessionCookie(user.id);
   const cookieStore = await cookies();
-  cookieStore.set(SESSION_COOKIE, packToken(session.token), {
+  cookieStore.set(SESSION_COOKIE, sessionCookie, {
     httpOnly: true,
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
@@ -60,10 +70,5 @@ export async function loginWithCredentials(handle: string, password: string) {
 
 export async function logoutCurrentUser() {
   const cookieStore = await cookies();
-  const raw = cookieStore.get(SESSION_COOKIE)?.value;
-  const token = unpackToken(raw);
-  if (token) {
-    await deleteSession(token);
-  }
   cookieStore.delete(SESSION_COOKIE);
 }

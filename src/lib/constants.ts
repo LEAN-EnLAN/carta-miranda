@@ -2,6 +2,7 @@ export const APP_NAME = "Carta Miranda";
 export const STORE_FILE = ".data/carta-miranda.json";
 export const SESSION_COOKIE = "carta-miranda-session";
 export const AUTHOR_ID = "leandro";
+export const DEFAULT_FEED_PAGE_SIZE = 20;
 
 export const FIXED_ACCOUNTS = [
   {
@@ -10,15 +11,15 @@ export const FIXED_ACCOUNTS = [
     displayName: "Leandro",
     password: "teti",
     bio: "Autor de las cartas, guardián de los borradores y de la tinta.",
-    accent: "from-rose-400 to-amber-300",
+    accent: "var(--wine)",
   },
   {
     id: "miranda",
     handle: "miranda",
     displayName: "Miranda",
-    password: "luna",
+    password: "chigga",
     bio: "La destinataria de todo lo que merece ser leído dos veces.",
-    accent: "from-fuchsia-400 to-pink-300",
+    accent: "var(--wine-soft)",
   },
 ] as const;
 

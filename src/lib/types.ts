@@ -25,13 +25,6 @@ export interface Account {
   accent: string;
 }
 
-export interface SessionRecord {
-  token: string;
-  userId: AccountId;
-  createdAt: string;
-  expiresAt: string;
-}
-
 export interface LetterVersion {
   id: string;
   type: LetterEventType;
@@ -81,10 +74,10 @@ export interface AutomationRunRecord {
 export interface AppStore {
   schemaVersion: 1;
   accounts: Account[];
-  sessions: SessionRecord[];
   letters: LetterRecord[];
   notifications: NotificationRecord[];
   automationRuns: AutomationRunRecord[];
+  pushSubscriptions: PushSubscription[];
 }
 
 export interface DashboardData {
@@ -94,6 +87,57 @@ export interface DashboardData {
   notifications: NotificationRecord[];
 }
 
+export interface FeedLetterItem {
+  kind: "letter";
+  id: string;
+  createdAt: string;
+  cursor: string;
+  letter: LetterRecord;
+  visibleToViewer: boolean;
+  versionCount: number;
+}
+
+export interface FeedActivityItem {
+  kind: "activity";
+  id: string;
+  createdAt: string;
+  cursor: string;
+  notification: NotificationRecord;
+}
+
+export type FeedItem = FeedLetterItem | FeedActivityItem;
+
+export interface FeedPage {
+  items: FeedItem[];
+  nextCursor: string | null;
+  hasMore: boolean;
+  pageSize: number;
+  total: number;
+  empty: boolean;
+}
+
+export interface RelationshipSummary {
+  viewer: Account;
+  partner: Account;
+  partnerId: AccountId;
+  conversationLabel: string;
+  conversationSubtitle: string;
+  sharedLetterCount: number;
+  draftCount: number;
+  unreadNotificationCount: number;
+  lastActivityAt: string | null;
+  recentPulseCount: number;
+}
+
+export interface ComposerDraft {
+  recipientId: AccountId;
+  title: string;
+  body: string;
+  spotifyTrack?: string;
+  accent: string;
+  updatedAt: string;
+}
+
 export interface LetterDetailData {
   user: Account;
   letter: LetterRecord;
@@ -101,4 +145,14 @@ export interface LetterDetailData {
   recipients: Account[];
   spotifyTrack?: string;
   accent?: string;
+}
+
+export interface PushSubscription {
+  endpoint: string;
+  keys: {
+    p256dh: string;
+    auth: string;
+  };
+  createdAt: string;
+  userAgent?: string;
 }
