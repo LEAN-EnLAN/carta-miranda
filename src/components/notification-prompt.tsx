@@ -26,7 +26,7 @@ type Status = "idle" | "checking" | "prompting" | "subscribing" | "subscribed" |
 function getInitialNotificationStatus(): Status {
   if (typeof window === "undefined" || !("Notification" in window)) return "unsupported";
   if (Notification.permission === "denied") return "denied";
-  return "prompting";
+  return "idle";
 }
 
 export function NotificationPrompt() {
@@ -90,6 +90,7 @@ export function NotificationPrompt() {
   };
 
   if (dismissed) return null;
+  if (status === "idle") return null;
   if (status === "checking" || status === "subscribing") {
     return (
       <div className="fixed bottom-4 right-4 z-50 rounded-lg border border-[color:var(--border)] bg-[color:var(--paper)] px-4 py-3 text-xs text-[color:var(--ink-muted)] shadow-lg">
