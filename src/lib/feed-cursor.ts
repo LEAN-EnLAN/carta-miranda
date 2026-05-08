@@ -12,7 +12,7 @@ export class InvalidFeedCursorError extends Error {
 export function decodeFeedCursor(cursor: string) {
   try {
     const raw = Buffer.from(cursor, "base64").toString("utf8");
-    const separator = raw.lastIndexOf(":");
+    const separator = raw.indexOf("Z:") + 1;
     if (separator <= 0) throw new Error("Missing separator");
 
     const createdAt = raw.slice(0, separator);
