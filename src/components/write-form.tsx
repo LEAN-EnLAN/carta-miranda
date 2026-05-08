@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useDeferredValue, useMemo, useState } from "react";
 import Link from "next/link";
 import type { AccountId, ComposerDraft } from "@/lib/types";
 import { PaperSheet } from "./paper-sheet";
@@ -51,7 +51,8 @@ export function ComposerFields({
   showPreview?: boolean;
   disabled?: boolean;
 }) {
-  const wordCount = countComposerWords(values.body);
+  const deferredBody = useDeferredValue(values.body);
+  const wordCount = useMemo(() => countComposerWords(deferredBody), [deferredBody]);
 
   return (
     <>
@@ -106,7 +107,7 @@ export function ComposerFields({
           value={values.body}
           disabled={disabled}
           onChange={(event) => onChange({ body: event.target.value })}
-          className="paper-control min-h-[22rem] resize-y"
+          className="paper-control min-h-[14rem] resize-y sm:min-h-[18rem] lg:min-h-[22rem]"
           style={{ borderColor: "var(--wine-soft)" }}
           placeholder="Escribile algo lindo..."
         />

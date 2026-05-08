@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useCallback, useState } from "react";
 
 function urlB64ToUint8Array(base64String: string): Uint8Array {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
@@ -23,8 +23,14 @@ function uint8ArrayToBase64(array: Uint8Array): string {
 
 type Status = "idle" | "checking" | "prompting" | "subscribing" | "subscribed" | "denied" | "unsupported" | "error";
 
+function getInitialNotificationStatus(): Status {
+  if (typeof window === "undefined" || !("Notification" in window)) return "unsupported";
+  if (Notification.permission === "denied") return "denied";
+  return "prompting";
+}
+
 export function NotificationPrompt() {
-  const [status, setStatus] = useState<Status>("checking");
+  const [status, setStatus] = useState<Status>(getInitialNotificationStatus);
   const [dismissed, setDismissed] = useState(false);
 
   const subscribe = useCallback(async () => {
@@ -66,29 +72,9 @@ export function NotificationPrompt() {
     }
   }, []);
 
-  useEffect(() => {
-    if (!("Notification" in window)) {
-      setStatus("unsupported");
-      return;
-    }
-
-    if (Notification.permission === "granted") {
-      subscribe();
-      return;
-    }
-
-    if (Notification.permission === "denied") {
-      setStatus("denied");
-      return;
-    }
-
-    // permission === "default" — show prompt
-    setStatus("prompting");
-  }, [subscribe]);
-
   const handleEnable = async () => {
     try {
-      const permission = await Notification.requestPermission();
+      const permission = Notification.permission === "granted" ? "granted" : await Notification.requestPermission();
       if (permission === "granted") {
         await subscribe();
       } else {

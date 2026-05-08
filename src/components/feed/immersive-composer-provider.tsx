@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useReducer } from "react";
+import { createContext, useContext, useEffect, useMemo, useReducer } from "react";
 import type { ReactNode } from "react";
 import type { ComposerDraft } from "@/lib/types";
 
@@ -106,17 +106,21 @@ export function ImmersiveComposerProvider({ children, initialDraft }: { children
   useEffect(() => {
     if (!state.hydrated) return;
 
-    try {
-      if (state.mode === "idle" && !state.draft.title && !state.draft.body && !state.draft.spotifyTrack) {
-        window.sessionStorage.removeItem(STORAGE_KEY);
-        return;
-      }
+    const timeout = window.setTimeout(() => {
+      try {
+        if (state.mode === "idle" && !state.draft.title && !state.draft.body && !state.draft.spotifyTrack) {
+          window.sessionStorage.removeItem(STORAGE_KEY);
+          return;
+        }
 
-      window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ mode: state.mode, draft: state.draft }));
-    } catch {
-      // Ignore storage failures and keep the composer functional.
-    }
-  }, [state]);
+        window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ mode: state.mode, draft: state.draft }));
+      } catch {
+        // Ignore storage failures and keep the composer functional.
+      }
+    }, 250);
+
+    return () => window.clearTimeout(timeout);
+  }, [state.hydrated, state.mode, state.draft]);
 
   const value = useMemo<ComposerContextValue>(
     () => ({

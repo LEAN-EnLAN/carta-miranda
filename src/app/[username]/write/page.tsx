@@ -6,7 +6,7 @@ import type { AccountId } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
-export function generateMetadata({ params }: { params: Promise<{ username: string }> }): Metadata {
+export function generateMetadata(): Metadata {
   return { title: "Escribir carta — carta-miranda" };
 }
 

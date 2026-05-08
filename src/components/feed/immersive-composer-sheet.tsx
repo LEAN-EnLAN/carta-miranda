@@ -116,21 +116,21 @@ export function ImmersiveComposerSheet({
       <section
         className={[
           "composer-sheet absolute bottom-0 left-0 right-0 mx-auto w-full max-w-3xl",
-          "border-b-0 px-4 pb-4 pt-5 sm:px-6 sm:pb-6 sm:pt-6",
+          "max-h-[calc(100dvh-1rem)] overflow-y-auto overscroll-contain border-b-0 px-4 pb-4 pt-5 sm:max-h-[calc(100dvh-2rem)] sm:px-6 sm:pb-6 sm:pt-6",
           "transition duration-300 ease-out",
           visible ? "translate-y-0" : "translate-y-full",
         ].join(" ")}
       >
-        <div className="flex items-start justify-between gap-4">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <p className="text-[11px] uppercase tracking-[0.45em] text-[color:var(--wine)]/75">Compositor inmersivo</p>
-            <h2 className="mt-2 font-serif text-3xl tracking-tight text-[color:var(--ink)]">Abrí la mesa sin salir del feed</h2>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-[color:var(--ink-muted)]">
+            <h2 className="mt-2 font-serif text-2xl tracking-tight text-[color:var(--ink)] sm:text-3xl">Abrí la mesa sin salir del feed</h2>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-[color:var(--ink-muted)] max-sm:hidden">
               Guardá un borrador, revisalo en preview y seguí scrolleando. El estado vive en sessionStorage para que no se pierda.
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             <Link href={fallbackHref} className="paper-button">
               mesa completa
             </Link>
@@ -170,7 +170,7 @@ export function ImmersiveComposerSheet({
             </div>
           </form>
 
-          <aside className="space-y-4">
+          <aside className="grid gap-4 sm:grid-cols-2 xl:block xl:space-y-4">
             <section className="border border-[color:var(--border)] p-5">
               <p className="text-[11px] uppercase tracking-[0.35em] text-[color:var(--wine)]/75">Estado</p>
               <dl className="mt-4 space-y-3 text-sm text-[color:var(--ink-muted)]">

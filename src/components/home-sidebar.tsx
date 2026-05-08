@@ -3,11 +3,6 @@ import { PaperSheet } from "./paper-sheet";
 import { getOtherAccountId } from "@/lib/constants";
 import type { DashboardData } from "@/lib/types";
 
-function formatDate(date: string | null) {
-  if (!date) return "";
-  return new Intl.DateTimeFormat("es-AR", { dateStyle: "medium" }).format(new Date(date));
-}
-
 export function HomeSidebar({ data }: { data: DashboardData }) {
   const otherId = getOtherAccountId(data.user.id);
   const otherName = otherId === "leandro" ? "Leandro" : "Miranda";
