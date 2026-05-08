@@ -1,14 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { formatDisplayDate } from "@/lib/format-date";
 import type { FeedActivityItem } from "@/lib/types";
-
-function formatDate(date: string) {
-  return new Intl.DateTimeFormat("es-AR", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  }).format(new Date(date));
-}
 
 export function FeedCardActivity({ item }: { item: FeedActivityItem }) {
   const isUnread = !item.notification.readAt;
@@ -24,7 +18,7 @@ export function FeedCardActivity({ item }: { item: FeedActivityItem }) {
       
       <div className="flex flex-wrap items-center gap-3">
         <span className="text-[10px] uppercase tracking-widest text-[color:var(--ink-muted)]">
-          {formatDate(item.createdAt)}
+          {formatDisplayDate(item.createdAt)}
         </span>
         <span className="text-[10px] font-medium uppercase tracking-wider text-[color:var(--ink)]">
           Actividad

@@ -2,14 +2,8 @@
 
 import Link from "next/link";
 import type { AccountId, FeedLetterItem } from "@/lib/types";
+import { formatDisplayDate } from "@/lib/format-date";
 import { PaperSheet } from "../paper-sheet";
-
-function formatDate(date: string) {
-  return new Intl.DateTimeFormat("es-AR", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  }).format(new Date(date));
-}
 
 export function FeedCardLetter({ item, viewerId }: { item: FeedLetterItem; viewerId?: AccountId }) {
   const authorName = item.letter.authorId === "leandro" ? "Leandro" : "Miranda";
@@ -31,7 +25,7 @@ export function FeedCardLetter({ item, viewerId }: { item: FeedLetterItem; viewe
           <p className="text-[11px] uppercase tracking-[0.35em] text-[color:var(--wine)]/75">{isDraft ? "Borrador — solo tuyo" : "Carta compartida"}</p>
           <h3 className="mt-2 font-serif text-2xl leading-tight text-[color:var(--ink)]">{item.letter.title}</h3>
           <p className="mt-2 text-xs uppercase tracking-[0.28em] text-[color:var(--ink-muted)]">
-            {authorName} · {formatDate(item.createdAt)}
+            {authorName} · {formatDisplayDate(item.createdAt)}
           </p>
         </div>
 

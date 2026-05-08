@@ -2,14 +2,8 @@ import Link from "next/link";
 import { EditorialFrame } from "./editorial-frame";
 import { PaperSheet } from "./paper-sheet";
 import { APP_NAME, AUTHOR_ID, getOtherAccountId } from "../lib/constants";
+import { formatDisplayDate } from "../lib/format-date";
 import type { DashboardData } from "../lib/types";
-
-function formatDate(date: string) {
-  return new Intl.DateTimeFormat("es-AR", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  }).format(new Date(date));
-}
 
 // DEPRECATED: Legacy dashboard. Use the feed view instead. Kept for ?view=legacy compatibility.
 export function Dashboard({ data }: { data: DashboardData }) {
@@ -185,7 +179,7 @@ export function Dashboard({ data }: { data: DashboardData }) {
                       </form>
                     ) : null}
                     <p className="mt-3 text-[11px] uppercase tracking-[0.25em] text-[color:var(--ink-muted)]">
-                      {formatDate(notification.createdAt)}
+                      {formatDisplayDate(notification.createdAt)}
                     </p>
                   </div>
                 ))

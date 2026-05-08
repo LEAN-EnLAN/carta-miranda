@@ -1,12 +1,6 @@
 import Link from "next/link";
+import { formatDisplayDate } from "@/lib/format-date";
 import type { FeedLetterItem } from "@/lib/types";
-
-function formatDate(date: string) {
-  return new Intl.DateTimeFormat("es-AR", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  }).format(new Date(date));
-}
 
 export function FeedCardStack({ item }: { item: FeedLetterItem }) {
   const recentVersions = item.letter.versions.slice().reverse().slice(0, 3);
@@ -42,7 +36,7 @@ export function FeedCardStack({ item }: { item: FeedLetterItem }) {
                 {version.type}
               </span>
               <span className="text-[10px] uppercase tracking-widest text-[color:var(--ink-muted)]">
-                {formatDate(version.createdAt)}
+                {formatDisplayDate(version.createdAt)}
               </span>
             </div>
             <p className="mt-2 text-sm leading-relaxed text-[color:var(--ink)]">
